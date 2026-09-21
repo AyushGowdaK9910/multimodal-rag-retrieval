@@ -36,8 +36,9 @@ class TextEmbedder:
         try:
             from sentence_transformers import SentenceTransformer
 
-            self._model = SentenceTransformer(self.model_name)
-            self.dimension = int(self._model.get_sentence_embedding_dimension())
+            model = SentenceTransformer(self.model_name)
+            self._model = model
+            self.dimension = int(model.get_sentence_embedding_dimension())
             self.backend = "sentence-transformers"
         except Exception:
             self._model = None
