@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install build pip-audit
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Type check
+        run: mypy mmrag
+
+      - name: Test
+        run: pytest --cov=mmrag --cov-report=term-missing --cov-report=xml
+
+      - name: Build
+        run: python -m build
+
+      - name: Dependency audit
+        run: pip-audit
+        continue-on-error: true
